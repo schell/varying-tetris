@@ -1,0 +1,7 @@
+- patterns:
+  - .*\.l?hs$
+  - .*\.cabal
+  - .*stack\.yaml$
+  commands:
+  - stack build --fast
+  - stack exec varying-tetris
