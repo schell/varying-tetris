@@ -10,27 +10,7 @@ import Data.Functor.Identity (runIdentity)
 import Paths_varying_tetris
 import Input
 import Network
-
-blockPicture :: ColorPicture ()
-blockPicture = setGeometry $ triangles $ do
-  let extant = 10
-  tri (0, white) (V2 extant 0, white)      (V2 extant extant, white)
-  tri (0, white) (V2 extant extant, white) (V2 0 extant, white)
-
-data Resources = Resources { rsrcBackends      :: SDL2Backends
-                           , rsrcAtlas         :: Atlas
-                           , rsrcBlockRenderer :: Renderer2
-                           , rsrcLastTime      :: Float 
-                           }
-
-renderFrame :: Resources -> Frame -> IO Resources 
-renderFrame rsrc@Resources{..} (Frame n) = do
-  let texture = backendV2V2 rsrcBackends
-  (text, _, atlas1) <-
-    freetypeRenderer2 texture rsrcAtlas white $ "tetris-varying frame " ++ show n
-  snd rsrcBlockRenderer [move 100 100]
-  snd text  [move 10 32]
-  return $ rsrc{rsrcAtlas=atlas1}
+import Graphics
 
 stepSplineMany :: Monad m => SplineT a b m c -> [a] -> a
                -> m (Either c (b, SplineT a b m c))
