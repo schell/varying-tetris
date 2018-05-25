@@ -12,10 +12,14 @@ import Input
 import Network
 import Graphics
 
+-- TODO: Part out the tetris logic into a library.
+-- Then put the library on hackage. Nobody should have
+-- to tetris from scratch.
+
 stepSplineMany :: Monad m => SplineT a b m c -> [a] -> a
                -> m (Either c (b, SplineT a b m c))
 stepSplineMany n [] x = runSplineT n x
-stepSplineMany n (x:xs) y = runSplineT n x >>= \case 
+stepSplineMany n (x:xs) y = runSplineT n x >>= \case
   Left c        -> return $ Left c
   Right (_, n1) -> stepSplineMany n1 xs y
 
@@ -23,9 +27,9 @@ loop :: Resources -> Spline Input Frame () -> IO ()
 loop rsrc@Resources{..} net = do
   threadDelay 1
   newTime <- SDL.time
-  let SDL2Backends color _ = rsrcBackends 
+  let SDL2Backends color _ = rsrcBackends
       t = newTime - rsrcLastTime
-  events  <- eventsToInputs <$> getEvents color 
+  events  <- eventsToInputs <$> getEvents color
   clearWindow color
   case runIdentity $ stepSplineMany net events (InputTime t) of
     Left () -> do
@@ -34,16 +38,16 @@ loop rsrc@Resources{..} net = do
     Right (frame, net1) -> do
       rsrc1 <- drawBoard rsrc frame
       updateWindow color
-      loop rsrc1{rsrcLastTime=newTime} net1 
+      loop rsrc1{rsrcLastTime=newTime} net1
 
 main :: IO ()
 main = do
-  backend     <- startupSDL2Backends 800 600 "varying-tetris" True 
+  backend     <- startupSDL2Backends 800 600 "varying-tetris" True
   renderBlock <- snd <$> compilePicture (backendV2V4 backend) blockPicture
   fontName    <- getDataFileName "assets/ChicagoFLF.ttf"
   allocAtlas fontName (PixelSize 32 32) asciiChars >>= \case
     Nothing    ->
       putStrLn $ "Could not alloc an atlas for font " ++ show fontName
     Just atlas -> do
-      t <- SDL.time 
-      loop (Resources backend atlas renderBlock t) network 
+      t <- SDL.time
+      loop (Resources backend atlas renderBlock t) network
