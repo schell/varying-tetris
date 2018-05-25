@@ -56,8 +56,13 @@ tetronimoOverlaps :: Tetronimo -> [Tetronimo] -> Bool
 tetronimoOverlaps (Tetronimo _ xs) = any overlaps
   where overlaps (Tetronimo _ ys) = or [ x == y | x <- xs, y <- ys ]
 
+-- | Moves a tetronimo in a 2d grid
+moveTetronimo :: V2 Int -> Tetronimo -> Tetronimo
+moveTetronimo p t = t{tetronimoBlocks=bs}
+  where bs = map (+p) $ tetronimoBlocks t
+
 -- | All the state needed to play a game of tetris. 
-data Board = Board { boardCurrentTetronimo :: Tetronimo
+data Board = Board { boardCurrentTetronimo :: Maybe Tetronimo
                    -- ^ The current falling tetronimo.
                    , boardCurrentPosition  :: V2 Int
                    -- ^ The position of the current tetronimo.
@@ -66,3 +71,6 @@ data Board = Board { boardCurrentTetronimo :: Tetronimo
                    , boardNextTetronimos   :: [Tetronimo]
                    -- ^ All the next tetronimos. This should be an infinite list.
                    }
+
+emptyBoard :: Board
+emptyBoard = Board Nothing 0 [] []

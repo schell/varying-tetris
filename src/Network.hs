@@ -5,8 +5,11 @@ module Network
 
 import Input
 import Control.Varying
+import Tetris
 
-data Frame = Frame Int
+data Frame = Frame { frameBoard :: Board
+                   , frameCount :: Int
+                   }
 
 tickDuration :: Float
 tickDuration = 2 -- second
@@ -24,6 +27,9 @@ tickEvent = var onTime >>> foldStream accrueTime (Nothing, 0) >>> var fst
 
 totalTicks :: Var Input Int
 totalTicks = use 1 tickEvent >>> foldStream (+) 0
+
+staticBoard :: Var Input Board
+staticBoard = pure emptyBoard
 
 network :: Spline Input Frame ()
 network = (Frame <$> totalTicks) `_untilEvent_` quitEvent

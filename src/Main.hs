@@ -32,7 +32,7 @@ loop rsrc@Resources{..} net = do
       updateWindow color
       putStrLn "Thank you for playing, bye!"
     Right (frame, net1) -> do
-      rsrc1 <- renderFrame rsrc frame
+      rsrc1 <- drawBoard rsrc frame
       updateWindow color
       loop rsrc1{rsrcLastTime=newTime} net1 
 
